@@ -20,7 +20,5 @@ def sliplane_guide() -> str:
     """Comprehensive guide explaining how Sliplane works as a platform - the mental model, architecture, and key behaviors."""
     return SLIPLANE_GUIDE
 
-mcp.add_transform(PromptsAsTools(mcp))
-
 if __name__ == "__main__":
     mcp.run(transport="http", host="0.0.0.0", port=8000, path="/")
