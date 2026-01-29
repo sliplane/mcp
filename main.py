@@ -12,7 +12,7 @@ mcp = FastMCP.from_openapi(
     name="Sliplane API MCP Server"
 )
 
-SLIPLANE_GUIDE = Path(__file__).parent.joinpath("sliplane_guide.md").read_text()
+SLIPLANE_GUIDE = Path(__file__).parent.joinpath("sliplane_guide.md").read_text(encoding="utf-8")
 
 @mcp.prompt()
 def sliplane_guide() -> str:
