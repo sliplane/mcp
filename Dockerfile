@@ -8,6 +8,8 @@ WORKDIR /app
 # Copy dependency files first for better caching
 COPY pyproject.toml .
 
+COPY sliplane_guide.md sliplane_guide.md
+
 # Install dependencies
 RUN uv sync --no-dev
 
