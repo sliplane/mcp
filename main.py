@@ -1,6 +1,5 @@
 import httpx
 from fastmcp import FastMCP
-from fastmcp.server.transforms import PromptsAsTools
 from pathlib import Path
 
 client = httpx.AsyncClient(base_url="https://ctrl.sliplane.io/v0",timeout=60.0)
