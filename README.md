@@ -1,8 +1,87 @@
-# Sliplane API MCP
+# Sliplane MCP Server
 
-This is the MCP (Model Context Protocol) Server for the [Sliplane API](https://ctrl.sliplane.io)
+MCP (Model Context Protocol) server for the [Sliplane API](https://ctrl.sliplane.io).
 
-## Local Development
+> **Warning**: You can execute destructive commands against your deployments. Use with caution and always double check your commands before executing them.
+
+## Prerequisites
+
+- **API Key**: Your personal API key from your Sliplane account
+- **Organization ID**: Your organization identifier from your Sliplane account
+
+Find both in your [Sliplane team settings](https://sliplane.io).
+
+## Installation
+
+The server is hosted at `https://mcp.sliplane.io` - no self-hosting required for normal usage.
+
+### Claude Code
+
+```bash
+claude mcp add sliplane https://mcp.sliplane.io \
+    -t sse \
+    -H "Authorization: Bearer yourapikeyhere" \
+    -H "X-Organization-Id: yourorganizationidhere"
+```
+
+### Cursor
+
+Go to Cursor Settings → Tools & Integrations → MCP Tools and add:
+
+```json
+{
+  "mcpServers": {
+    "sliplane": {
+      "url": "https://mcp.sliplane.io",
+      "type": "sse",
+      "headers": {
+        "Authorization": "Bearer yourapikeyhere",
+        "X-Organization-Id": "yourorganizationidhere"
+      }
+    }
+  }
+}
+```
+
+### VS Code
+
+Create `.vscode/mcp.json` in your repository:
+
+```json
+{
+  "servers": {
+    "sliplane": {
+      "type": "sse",
+      "url": "https://mcp.sliplane.io",
+      "headers": {
+        "Authorization": "Bearer yourapikeyhere",
+        "X-Organization-Id": "yourorganizationidhere"
+      }
+    }
+  }
+}
+```
+
+### Other Tools
+
+- **URL**: `https://mcp.sliplane.io`
+- **Type**: `StreamableHTTP`
+- **Headers**:
+  - `Authorization: Bearer yourapikeyhere`
+  - `X-Organization-Id: yourorganizationidhere`
+
+## What You Can Do
+
+The MCP server mirrors the Sliplane public API. You can:
+
+- Manage deployments
+- Access project information
+- Monitor application status
+- Execute deployment operations
+
+## Self-Hosting (Optional)
+
+Only needed if you want to modify the server. For normal usage, use the hosted version above.
 
 ```bash
 uv sync
@@ -12,14 +91,10 @@ uv run main.py
 Or with Docker:
 
 ```bash
-docker build -t sliplane-api-mcp .
-docker run -p 8000:8000 sliplane-api-mcp
+docker build -t sliplane-mcp .
+docker run -p 8000:8000 sliplane-mcp
 ```
 
-## Deployment
 
-Available on [mcp.sliplane.io](https://mcp.sliplane.io). Deployed on [Sliplane](https://sliplane.io)
 
-## Usage
-
-Checkout [Usage Docs](https://docs.sliplane.io/mcp/getting-started)
+[<img src="https://sliplane.io/deploy-with-sliplane.svg" width=200>](https://sliplane.io?utm_source=mcp-github)
