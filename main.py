@@ -14,7 +14,7 @@ mcp = FastMCP.from_openapi(
 
 SLIPLANE_GUIDE = Path(__file__).parent.joinpath("sliplane_guide.md").read_text(encoding="utf-8")
 
-@mcp.prompt()
+@mcp.tool()
 def sliplane_guide() -> str:
     """Comprehensive guide explaining how Sliplane works as a platform - the mental model, architecture, and key behaviors."""
     return SLIPLANE_GUIDE
