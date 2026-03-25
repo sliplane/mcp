@@ -7,9 +7,8 @@ MCP (Model Context Protocol) server for the [Sliplane API](https://ctrl.sliplane
 ## Prerequisites
 
 - **API Key**: Your personal API key from your Sliplane account
-- **Organization ID**: Your organization identifier from your Sliplane account
 
-Find both in your [Sliplane team settings](https://sliplane.io).
+You can create an API key in your [Sliplane team settings](https://sliplane.io).
 
 ## Installation
 
@@ -20,8 +19,7 @@ The server is hosted at `https://mcp.sliplane.io` - no self-hosting required for
 ```bash
 claude mcp add sliplane https://mcp.sliplane.io \
     -t sse \
-    -H "Authorization: Bearer yourapikeyhere" \
-    -H "X-Organization-Id: yourorganizationidhere"
+    -H "Authorization: Bearer yourapikeyhere"
 ```
 
 ### Cursor
@@ -35,8 +33,7 @@ Go to Cursor Settings → Tools & Integrations → MCP Tools and add:
       "url": "https://mcp.sliplane.io",
       "type": "sse",
       "headers": {
-        "Authorization": "Bearer yourapikeyhere",
-        "X-Organization-Id": "yourorganizationidhere"
+        "Authorization": "Bearer yourapikeyhere"
       }
     }
   }
@@ -54,8 +51,7 @@ Create `.vscode/mcp.json` in your repository:
       "type": "sse",
       "url": "https://mcp.sliplane.io",
       "headers": {
-        "Authorization": "Bearer yourapikeyhere",
-        "X-Organization-Id": "yourorganizationidhere"
+        "Authorization": "Bearer yourapikeyhere"
       }
     }
   }
@@ -68,7 +64,6 @@ Create `.vscode/mcp.json` in your repository:
 - **Type**: `StreamableHTTP`
 - **Headers**:
   - `Authorization: Bearer yourapikeyhere`
-  - `X-Organization-Id: yourorganizationidhere`
 
 ## What You Can Do
 
