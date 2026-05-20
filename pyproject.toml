@@ -2,6 +2,7 @@
 name = "sliplane-api-mcp"
 version = "0.1.0"
 requires-python = ">=3.12"
+license = "MIT"
 dependencies = [
     "httpx[brotli]>=0.28.1",
     "fastmcp>=3.3.1,<4.0.0",
