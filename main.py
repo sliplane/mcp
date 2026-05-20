@@ -1,8 +1,22 @@
 import httpx
 from fastmcp import FastMCP
+from fastmcp.server.dependencies import get_http_headers
 from pathlib import Path
 
-client = httpx.AsyncClient(base_url="https://ctrl.sliplane.io/v0",timeout=60.0)
+
+async def forward_authorization(request: httpx.Request) -> None:
+    headers = get_http_headers(include={"authorization", "x-organization-id"})
+    if auth := headers.get("authorization"):
+        request.headers["Authorization"] = auth
+    if org := headers.get("x-organization-id"):
+        request.headers["X-Organization-ID"] = org
+
+
+client = httpx.AsyncClient(
+    base_url="https://ctrl.sliplane.io/v0",
+    timeout=60.0,
+    event_hooks={"request": [forward_authorization]},
+)
 
 openapi_spec = httpx.get("https://ctrl.sliplane.io/spec.json").json()
 
