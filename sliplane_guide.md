@@ -1,6 +1,6 @@
 # Sliplane Platform Mental Model
 
-Sliplane is a container hosting platform. Understanding these concepts will help you work effectively with the API and MCP server.
+Sliplane is a cloud platform for running containerized applications, managed PostgreSQL databases, and S3-compatible object storage. Understanding these concepts will help you work effectively with the API and MCP server.
 
 ## Core Architecture
 
@@ -9,6 +9,7 @@ Sliplane is a container hosting platform. Understanding these concepts will help
 - **Projects**: Logical grouping for services, such as "Production", "Staging", or one project per customer/app.
 - **Services**: Individual running containers with Sliplane-managed configuration, networking, deploys, logs, and metrics.
 - **Servers**: VMs that run services. A server can host many services as long as its CPU, memory, disk, and bandwidth can handle them.
+- **Databases**: Managed PostgreSQL instances with separate compute, storage, TLS, backups, metrics, query stats, and access control.
 - **Object Storage**: Team-level S3-compatible buckets for uploads, backups, generated files, and app assets.
 
 ### 1 Service = 1 Container
@@ -130,6 +131,45 @@ Pricing model:
 - Examples: 1 GB, 10 GB, or 250 GB all cost 5 EUR/month; 251 GB costs 10 EUR/month.
 - There are no Sliplane ingress, egress, API request, or per-bucket fees for Object Storage.
 
+## Managed PostgreSQL Databases
+
+Sliplane Databases are first-class managed PostgreSQL instances, not ordinary container services with volumes. Use them for production databases when you want database-aware operations instead of self-hosting PostgreSQL as a service.
+
+Key capabilities:
+- Provisioning is managed through the dashboard, this MCP server, and the API. Creation requires a name, region, compute size, storage size, and billing period.
+- Databases are usually ready in about 30 seconds, then expose connection details in the dashboard.
+- All connections support TLS. Prefer the dashboard's Connection URI with `sslmode=verify-full` so clients validate the certificate and hostname.
+- JavaScript clients such as `pg`, `postgres.js`, and Drizzle/Postgres.js may reject `sslrootcert=system`; remove that query parameter for those clients because system roots are their default behavior.
+- Access control is IP allowlist based. If the allowlist is empty, all database access is blocked. Add single IPs or CIDR ranges for IPv4 and IPv6.
+- Credentials can be rotated, and databases can be paused/resumed through the dashboard, MCP server, and API.
+
+Operational model:
+- Backups use Point-in-Time Recovery (PITR) with a 7-day retention window on all tiers.
+- Restoring a backup creates a new database at the current configuration; it does not overwrite the existing database.
+- The restored database is billed separately from the moment it exists, at the same rate as its configuration.
+- Compute and storage upgrades are zero-downtime. Storage can grow up to 1 TB and cannot be reduced.
+- Shared CPU instances are suited for development and smaller apps; dedicated CPU instances are intended for production and performance-sensitive workloads.
+- Shared instances allow up to 100 connections; dedicated instances allow up to 300 connections.
+- Dedicated instances are available up to 48 vCPU and 196 GB RAM, with larger requirements handled by support.
+
+Observability:
+- Database logs are PostgreSQL logs. They can be filtered by time range or keyword and streamed live.
+- Metrics include CPU, memory, disk, and active connections.
+- Query Stats are based on PostgreSQL `pg_stat_statements` and show slow queries and top queries by total execution time.
+- Use sustained CPU pressure, low memory headroom, disk growth, or connection pressure as signals to upgrade compute or storage.
+
+Pricing model:
+- Databases are billed separately from servers and Object Storage.
+- Price is compute plus storage, excluding VAT unless stated otherwise.
+- Compute and storage are billed hourly from database creation until deletion.
+- Hourly, monthly, and yearly billing periods are available; monthly and yearly commitments are discounted.
+- Each database includes 10 GB of storage at no extra cost. Additional storage is billed per GB per month.
+- Prices vary by region; Germany and Finland pricing is documented, while the dashboard shows exact prices for each selected region and size.
+
+MCP/API model:
+- Database management is available through this MCP server and over the REST API, including create/delete, pause/resume, credential rotation, PITR restore, logs, and metrics.
+- The API documentation groups these endpoints under the `postgres` tag.
+
 ## Health Checks
 
 - HTTP path-based health checks can verify a service before traffic moves to it.
@@ -149,6 +189,7 @@ Pricing model:
 - Runtime and build logs can be searched/filtered in the dashboard.
 - CPU, memory, and disk metrics are available at server level.
 - Service-level resource views are available, but the sum of services will not exactly equal total server usage because system processes also consume resources.
+- Managed PostgreSQL has its own database-level logs, CPU/memory/disk/connection metrics, and query statistics separate from service/server metrics.
 
 ## Billing
 
@@ -162,3 +203,4 @@ Pricing model:
 - Prepaid credits are account-wide, are not tied to a specific server, expire after one year, and are non-refundable.
 - Egress is included with servers and subject to Sliplane's Fair Use Policy.
 - Object Storage has its own pricing model based on average stored data across team buckets. It does not add ingress, egress, API request, or per-bucket fees.
+- Managed PostgreSQL has its own compute-plus-storage pricing and does not share the per-server pricing model.
