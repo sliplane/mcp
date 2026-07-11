@@ -80,9 +80,39 @@ For API key auth:
 
 ### opencode
 
+Run the interactive setup so opencode can store the pre-registered OAuth client ID:
+
+```text
+$ opencode mcp add
+
+Add MCP server
+
+Enter MCP server name
+sliplane
+
+Select MCP server type
+Remote
+
+Enter MCP server URL
+https://mcp.sliplane.io
+
+Does this server require OAuth authentication?
+Yes
+
+Do you have a pre-registered client ID?
+Yes
+
+Enter client ID
+sliplane-mcp
+
+Do you have a client secret?
+No
+```
+
+Then authenticate:
+
 ```bash
-opencode mcp add sliplane --url https://mcp.sliplane.io
-opencode mcp auth sliplane
+opencode mcp auth
 ```
 
 ### VS Code
