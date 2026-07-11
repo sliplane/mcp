@@ -6,9 +6,8 @@ MCP (Model Context Protocol) server for the [Sliplane API](https://ctrl.sliplane
 
 ## Prerequisites
 
-- **API Key**: Your personal API key from your Sliplane account
-
-You can create an API key in your [Sliplane team settings](https://sliplane.io).
+- **OAuth**: Recommended. Your MCP client opens Sliplane auth and receives a scoped Sliplane API token.
+- **API key**: Still supported for clients that do not support OAuth.
 
 ## Installation
 
@@ -17,27 +16,73 @@ The server is hosted at `https://mcp.sliplane.io` - no self-hosting required for
 ### Claude Code
 
 ```bash
-claude mcp add sliplane https://mcp.sliplane.io \
-    -t sse \
-    -H "Authorization: Bearer yourapikeyhere"
+claude mcp add --transport http \
+  --client-id sliplane-mcp \
+  sliplane https://mcp.sliplane.io
+```
+
+For API key auth:
+
+```bash
+claude mcp add --transport http \
+  -H "Authorization: Bearer yourapikeyhere" \
+  sliplane https://mcp.sliplane.io
+```
+
+### Codex
+
+```bash
+codex mcp add sliplane \
+  --url https://mcp.sliplane.io \
+  --oauth-client-id sliplane-mcp
+```
+
+For API key auth:
+
+```bash
+export SLIPLANE_API_KEY=yourapikeyhere
+
+codex mcp add sliplane \
+  --url https://mcp.sliplane.io \
+  --bearer-token-env-var SLIPLANE_API_KEY
 ```
 
 ### Cursor
 
-Go to Cursor Settings → Tools & Integrations → MCP Tools and add:
+```json
+{
+  "mcpServers": {
+    "sliplane-local": {
+      "url": "https://mcp.sliplane.io",
+      "auth": {
+        "CLIENT_ID": "sliplane-mcp",
+        "scopes": ["full"]
+      }
+    }
+  }
+}
+```
+
+For API key auth:
 
 ```json
 {
   "mcpServers": {
     "sliplane": {
       "url": "https://mcp.sliplane.io",
-      "type": "sse",
       "headers": {
         "Authorization": "Bearer yourapikeyhere"
       }
     }
   }
 }
+```
+
+### opencode
+
+```bash
+opencode mcp add sliplane --url https://mcp.sliplane.io
+opencode mcp auth sliplane
 ```
 
 ### VS Code
@@ -48,7 +93,7 @@ Create `.vscode/mcp.json` in your repository:
 {
   "servers": {
     "sliplane": {
-      "type": "sse",
+      "type": "http",
       "url": "https://mcp.sliplane.io",
       "headers": {
         "Authorization": "Bearer yourapikeyhere"
@@ -62,7 +107,9 @@ Create `.vscode/mcp.json` in your repository:
 
 - **URL**: `https://mcp.sliplane.io`
 - **Type**: `StreamableHTTP`
-- **Headers**:
+- **OAuth Client ID**: `sliplane-mcp`
+- **OAuth scopes**: `full`
+- **API key header**:
   - `Authorization: Bearer yourapikeyhere`
 
 ## What You Can Do
@@ -81,6 +128,13 @@ Only needed if you want to modify the server. For normal usage, use the hosted v
 ```bash
 uv sync
 uv run main.py
+```
+
+The OAuth integration is configured with environment variables:
+
+```bash
+SLIPLANE_MCP_BASE_URL=http://localhost:8000
+SLIPLANE_AUTH_SERVER_URL=http://localhost:3000
 ```
 
 Or with Docker:
