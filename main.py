@@ -6,6 +6,8 @@ from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, RemoteAuthProvider, TokenVerifier
 from fastmcp.server.dependencies import get_http_headers
 
+from preset_guide import get_preset_guide
+
 
 MCP_BASE_URL = os.getenv("SLIPLANE_MCP_BASE_URL", "https://mcp.sliplane.io")
 AUTH_SERVER_URL = os.getenv("SLIPLANE_AUTH_SERVER_URL", "https://api.sliplane.io")
@@ -61,6 +63,17 @@ SLIPLANE_GUIDE = (
 def sliplane_guide() -> str:
     """Comprehensive guide explaining how Sliplane works as a platform - the mental model, architecture, and key behaviors."""
     return SLIPLANE_GUIDE
+
+
+@mcp.tool()
+def sliplane_preset_guide(preset_id: str | None = None) -> str:
+    """Guide for deploying Sliplane presets through MCP.
+
+    Call without an ID to list presets, with an ID for its exact settings,
+    or with ``all`` for every setting.
+    """
+    return get_preset_guide(preset_id)
+
 
 if __name__ == "__main__":
     mcp.run(
