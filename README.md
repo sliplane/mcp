@@ -151,6 +151,8 @@ The MCP server mirrors the Sliplane public API. You can:
 - Monitor application status
 - Execute deployment operations
 
+Moreover, you can discover and deploy all services with presets through the `sliplane_preset_guide` tool.
+
 ## Self-Hosting (Optional)
 
 Only needed if you want to modify the server. For normal usage, use the hosted version above.
@@ -173,7 +175,5 @@ Or with Docker:
 docker build -t sliplane-mcp .
 docker run -p 8000:8000 sliplane-mcp
 ```
-
-
 
 [<img src="https://sliplane.io/deploy-with-sliplane.svg" width=200>](https://sliplane.io?utm_source=mcp-github)

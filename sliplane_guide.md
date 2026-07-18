@@ -170,6 +170,12 @@ MCP/API model:
 - Database management is available through this MCP server and over the REST API, including create/delete, pause/resume, credential rotation, PITR restore, logs, and metrics.
 - The API documentation groups these endpoints under the `postgres` tag.
 
+Deploying databases:
+- Sliplane offers two paths: **managed PostgreSQL** via `createPostgres`, or a **container preset** via `sliplane_preset_guide` and `createService`.
+- For PostgreSQL or a generic "database" request, prefer managed PostgreSQL. Ask whether the user wants a self-hosted container instead. Use the `postgres` preset only when they choose that path.
+- For other engines (MySQL, MongoDB, Redis, etc.), use the matching preset.
+- Recommended `createPostgres` defaults: Germany (`ger`), Base shared CPU (`base`), monthly billing (`monthly`). Let the user choose region, compute (CPU), storage, db name, db user, and billing.
+
 ## Health Checks
 
 - HTTP path-based health checks can verify a service before traffic moves to it.

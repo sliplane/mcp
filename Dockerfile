@@ -9,12 +9,14 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 COPY sliplane_guide.md sliplane_guide.md
+COPY sliplane_preset_guide.md sliplane_preset_guide.md
+COPY sliplane_presets.json sliplane_presets.json
 
 # Install dependencies (locked to exact versions)
 RUN uv sync --no-dev --frozen
 
 # Copy application code
-COPY main.py .
+COPY main.py preset_guide.py ./
 
 # Run the application
 CMD ["uv", "run", "main.py"]
