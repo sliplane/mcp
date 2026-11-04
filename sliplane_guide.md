@@ -185,9 +185,10 @@ Deploying databases:
 ## Environment Variables
 
 - Environment variables can be marked as `secret`, which masks them in API responses.
-- Updating env vars is a full replacement, not a merge.
-- To add one variable, include all existing variables plus the new one.
-- For secrets, an empty value can preserve the existing secret value.
+- To add, change, or remove individual variables, use `setServiceEnvironmentVariable` and `deleteServiceEnvironmentVariable`. They leave all other variables untouched. Use `listServiceEnvironmentVariables` to see the current keys.
+- Each set or delete triggers a redeploy of the service.
+- Only use the `env` field of `updateService` when the user explicitly wants to replace the whole set. It is a full replacement, not a merge, and any variable left out is deleted.
+- When replacing the whole set, an empty value for a secret keeps its existing value.
 
 ## Logs & Metrics
 
