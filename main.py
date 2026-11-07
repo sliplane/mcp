@@ -5,8 +5,10 @@ import httpx
 from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, RemoteAuthProvider, TokenVerifier
 from fastmcp.server.dependencies import get_http_headers
+from mcp.types import ToolAnnotations
 
 from preset_guide import get_preset_guide
+from tool_annotations import annotate_openapi_component
 
 
 MCP_BASE_URL = os.getenv("SLIPLANE_MCP_BASE_URL", "https://mcp.sliplane.io")
@@ -52,6 +54,7 @@ mcp = FastMCP.from_openapi(
     client=client,
     name="Sliplane API MCP Server",
     auth=auth,
+    mcp_component_fn=annotate_openapi_component,
 )
 
 SLIPLANE_GUIDE = (
@@ -59,13 +62,29 @@ SLIPLANE_GUIDE = (
 )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        title="Sliplane platform guide",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    )
+)
 def sliplane_guide() -> str:
     """Comprehensive guide explaining how Sliplane works as a platform - the mental model, architecture, and key behaviors."""
     return SLIPLANE_GUIDE
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        title="Sliplane preset guide",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    )
+)
 def sliplane_preset_guide(preset_id: str | None = None) -> str:
     """Guide for deploying Sliplane presets through MCP.
 
