@@ -10,7 +10,7 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
 from preset_guide import get_preset_guide
-from tool_annotations import annotate_openapi_component
+from tool_annotations import customize_openapi_component
 
 
 MCP_BASE_URL = os.getenv("SLIPLANE_MCP_BASE_URL", "https://mcp.sliplane.io")
@@ -56,7 +56,7 @@ mcp = FastMCP.from_openapi(
     client=client,
     name="Sliplane API MCP Server",
     auth=auth,
-    mcp_component_fn=annotate_openapi_component,
+    mcp_component_fn=customize_openapi_component,
 )
 
 SLIPLANE_GUIDE = (

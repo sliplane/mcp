@@ -6,7 +6,8 @@ from fastmcp import FastMCP
 
 from tool_annotations import (
     add_missing_types,
-    annotate_openapi_component,
+    api_docs_url,
+    customize_openapi_component,
     tool_annotations,
 )
 
@@ -97,7 +98,7 @@ class ToolAnnotationsTest(unittest.TestCase):
         mcp = FastMCP.from_openapi(
             openapi_spec=SPEC,
             client=httpx.AsyncClient(base_url="http://test"),
-            mcp_component_fn=annotate_openapi_component,
+            mcp_component_fn=customize_openapi_component,
         )
         tools = asyncio.run(mcp.list_tools())
         self.assertEqual(len(tools), 6)
@@ -109,10 +110,30 @@ class ToolAnnotationsTest(unittest.TestCase):
             if not a.readOnlyHint:
                 self.assertIsNotNone(a.destructiveHint, tool.name)
 
+        for tool in tools:
+            self.assertIn("API reference: https://ctrl.sliplane.io/#api-1/", tool.description)
         postgres = next(t for t in tools if t.name == "createPostgres")
         self.assertEqual(
             postgres.parameters["properties"]["version"],
             {"enum": [18], "type": "integer", "description": "Major version.", "default": 18},
+        )
+
+    def test_attach_post_is_not_idempotent(self):
+        self.assertFalse(tool_annotations("post", "attachServiceVolume", None).idempotentHint)
+        self.assertTrue(tool_annotations("put", "attachSSHKey", None).idempotentHint)
+
+    def test_api_docs_url(self):
+        self.assertEqual(
+            api_docs_url("post", "/projects/{projectId}/services/{serviceId}/volumes", ["Services"]),
+            "https://ctrl.sliplane.io/#api-1/tag/services/POST/projects/{projectId}/services/{serviceId}/volumes",
+        )
+        self.assertEqual(
+            api_docs_url("get", "/ssh-keys", ["SSH Keys"]),
+            "https://ctrl.sliplane.io/#api-1/tag/ssh-keys/GET/ssh-keys",
+        )
+        self.assertEqual(
+            api_docs_url("get", "/pricing", []),
+            "https://ctrl.sliplane.io/#api-1/GET/pricing",
         )
 
     def test_add_missing_types(self):

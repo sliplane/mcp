@@ -1,4 +1,8 @@
-"""MCP tool annotations for tools generated from the Sliplane OpenAPI spec."""
+"""Customizations for MCP tools generated from the Sliplane OpenAPI spec.
+
+Adds tool annotations, a link to the API reference, and explicit parameter
+types where the spec leaves them out.
+"""
 
 import re
 
@@ -31,7 +35,14 @@ DESTRUCTIVE_PREFIXES = (
 )
 
 # Prefixes for write calls that are safe to repeat with the same arguments.
-IDEMPOTENT_PREFIXES = ("set", "put", "update", "attach", "detach", "delete", "remove")
+# PUT and DELETE are idempotent by method; "attach" is not listed because
+# e.g. attachServiceVolume (POST) can create a new volume on every call.
+IDEMPOTENT_PREFIXES = ("set", "put", "update", "detach", "delete", "remove")
+
+# Scalar API reference that renders the OpenAPI spec. Operation anchors follow
+# Scalar's default slugs: {document}/tag/{tag-slug}/{METHOD}{path}.
+API_DOCS_URL = "https://ctrl.sliplane.io"
+API_DOCS_DOCUMENT_SLUG = "api-1"
 
 
 def _title_from_operation_id(operation_id: str) -> str:
@@ -172,10 +183,34 @@ def add_missing_types(schema) -> None:
             add_missing_types(value)
 
 
-def annotate_openapi_component(route, component) -> None:
+def _slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-")
+
+
+def api_docs_url(method: str, path: str, tags: list[str]) -> str:
+    """Link to an operation in the Sliplane API reference."""
+    prefix = f"{API_DOCS_URL}/#{API_DOCS_DOCUMENT_SLUG}"
+    if tags:
+        prefix += f"/tag/{_slug(tags[0])}"
+    return f"{prefix}/{method.upper()}{path}"
+
+
+def add_api_docs_link(description: str | None, url: str) -> str:
+    link = f"API reference: {url}"
+    if not description:
+        return link
+    if url in description:
+        return description
+    return f"{description.rstrip()}\n\n{link}"
+
+
+def customize_openapi_component(route, component) -> None:
     """``mcp_component_fn`` hook for ``FastMCP.from_openapi``."""
     if isinstance(component, Tool):
         component.annotations = tool_annotations(
             route.method, route.operation_id, route.summary
+        )
+        component.description = add_api_docs_link(
+            component.description, api_docs_url(route.method, route.path, route.tags)
         )
         add_missing_types(component.parameters)
