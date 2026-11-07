@@ -16,7 +16,7 @@ COPY sliplane_presets.json sliplane_presets.json
 RUN uv sync --no-dev --frozen
 
 # Copy application code
-COPY main.py preset_guide.py ./
+COPY main.py preset_guide.py tool_annotations.py ./
 
 # Run the application
 CMD ["uv", "run", "main.py"]
