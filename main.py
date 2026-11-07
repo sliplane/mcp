@@ -6,6 +6,8 @@ from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, RemoteAuthProvider, TokenVerifier
 from fastmcp.server.dependencies import get_http_headers
 from mcp.types import ToolAnnotations
+from starlette.requests import Request
+from starlette.responses import PlainTextResponse
 
 from preset_guide import get_preset_guide
 from tool_annotations import annotate_openapi_component
@@ -92,6 +94,11 @@ def sliplane_preset_guide(preset_id: str | None = None) -> str:
     or with ``all`` for every setting.
     """
     return get_preset_guide(preset_id)
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health(_: Request) -> PlainTextResponse:
+    return PlainTextResponse("ok")
 
 
 if __name__ == "__main__":
