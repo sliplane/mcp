@@ -6,9 +6,11 @@ from fastmcp import FastMCP
 from fastmcp.server.auth import AccessToken, RemoteAuthProvider, TokenVerifier
 from fastmcp.server.dependencies import get_http_headers
 from mcp.types import ToolAnnotations
+from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
+from origin_lock import OriginLock
 from preset_guide import get_preset_guide
 from tool_annotations import annotate_openapi_component
 
@@ -108,4 +110,11 @@ if __name__ == "__main__":
         port=8000,
         path="/",
         stateless_http=True,
+        middleware=[
+            Middleware(
+                OriginLock,
+                secret=os.getenv("ORIGIN_SECRET", ""),
+                open_paths=("/health",),
+            )
+        ],
     )
