@@ -5,5 +5,5 @@ requires-python = ">=3.12"
 license = "MIT"
 dependencies = [
     "httpx[brotli]>=0.28.1",
-    "fastmcp>=3.3.1,<4.0.0",
+    "fastmcp>=4.2.0,<5.0.0",
 ]
